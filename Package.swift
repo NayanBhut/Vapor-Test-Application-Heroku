@@ -1,8 +1,8 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.3.3
 import PackageDescription
 
 let package = Package(
-    name: "my-dockerized-app",
+    name: "Run",
     platforms: [
        .macOS(.v10_15)
     ],
@@ -11,6 +11,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
     ],
     targets: [
+        .target(name: "Run", dependencies: [ .target(name: "App")]),
         .target(
             name: "App",
             dependencies: [
@@ -23,10 +24,10 @@ let package = Package(
                 .unsafeFlags(["-cross-module-optimization"], .when(configuration: .release))
             ]
         ),
-        .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
-        .testTarget(name: "AppTests", dependencies: [
-            .target(name: "App"),
-            .product(name: "XCTVapor", package: "vapor"),
-        ])
+//        .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
+//        .testTarget(name: "AppTests", dependencies: [
+//            .target(name: "App"),
+//            .product(name: "XCTVapor", package: "vapor"),
+//        ])
     ]
 )
