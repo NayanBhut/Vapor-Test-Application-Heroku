@@ -1,24 +1,22 @@
 import Vapor
+import Foundation
 
 func routes(_ app: Application) throws {
-    app.get { req in
-        return "It works! Now Check again"
-    }
-
-    app.get("hello") { req -> String in //route
-        return "Hello, world! Get"
+    app.post("greeting") { req -> HTTPStatus in
+        let greeting = try req.content.decode(Greeting.self)
+        print(greeting.hello) // "world"
+        return HTTPStatus.ok
     }
     
-    app.get("hello", ":name") { req -> String in //Route/name Route param dynamic
-        let name = req.parameters.get("name")!
-        return "Hello, world! \(name)"
+    app.get("hello") { req -> String in
+        let hello = try req.query.decode(Hello.self) //let name: String? = req.query["name"]
+        return "Hello, \(hello.name ?? "Anonymous")"
     }
     
-    app.get("foo", "bar", "baz") { req in // Route/foo/bar/baz Route param Static
-        return "Hello, world! \(req.url)"
-    }
-    
-    app.get("books") { req -> String in
-        return "Hello, world! Nayan"
+    app.post("users") { req -> CreateUser in
+        try CreateUser.validate(content: req)
+        let user = try req.content.decode(CreateUser.self)
+        // Do something with user.
+        return user
     }
 }
