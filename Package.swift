@@ -1,10 +1,10 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.6
 import PackageDescription
 
 let package = Package(
     name: "Run",
     platforms: [
-       .macOS(.v10_15)
+        .macOS(.v12)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.

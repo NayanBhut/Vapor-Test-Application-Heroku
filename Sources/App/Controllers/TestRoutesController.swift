@@ -12,13 +12,8 @@ import Darwin
 
 struct TestRoutesController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
-        if #available(macOS 12, *) {
-            routes.get("users", use: getAllUsers)
-            routes.post("addusers", use: addUser)
-        } else {
-            print("Earlier Versions")
-            // Fallback on earlier versions
-        }
+        routes.get("users", use: getAllUsers)
+        routes.post("addusers", use: addUser)
     }
     
     
@@ -27,7 +22,7 @@ struct TestRoutesController: RouteCollection {
 //        Acronym.query(on: req.db).all()
 //    }
     
-    @available(macOS 12, *)
+    
     func getAllUsers(_ req: Request) async throws -> [CreateUser] {
         guard let dbService = req.application.databaseService else {
             fatalError("Missing DatabaseService")
@@ -40,7 +35,7 @@ struct TestRoutesController: RouteCollection {
             
     }
     
-    @available(macOS 12, *)
+    
     func addUser(_ req: Request) async throws -> CreateUser {
         try CreateUser.validate(content: req)
         let user = try req.content.decode(CreateUser.self)
