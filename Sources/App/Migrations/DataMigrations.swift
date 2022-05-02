@@ -1,8 +1,12 @@
 //
-//  Migrations.swift
+//  DataMigrations.swift
 //  
 //
 //  Created by Nayan Bhut on 5/2/22.
 //
 
-import Foundation
+import Vapor
+
+//struct DataMigrations: Migration {
+//    
+//}

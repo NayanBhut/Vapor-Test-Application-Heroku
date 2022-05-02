@@ -38,12 +38,39 @@
         }
       },
       {
+        "package": "postgres-kit",
+        "repositoryURL": "https://github.com/vapor/postgres-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "221e3e39e9c7d9b4999f38038c6b5f3122f4d438",
+          "version": "2.6.0"
+        }
+      },
+      {
+        "package": "postgres-nio",
+        "repositoryURL": "https://github.com/vapor/postgres-nio.git",
+        "state": {
+          "branch": null,
+          "revision": "a7a160bb861ca88b0c8f1cc11e15c4892ab897bf",
+          "version": "1.10.0"
+        }
+      },
+      {
         "package": "routing-kit",
         "repositoryURL": "https://github.com/vapor/routing-kit.git",
         "state": {
           "branch": null,
           "revision": "5603b81ceb744b8318feab1e60943704977a866b",
           "version": "4.3.1"
+        }
+      },
+      {
+        "package": "sql-kit",
+        "repositoryURL": "https://github.com/vapor/sql-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "89b0a0a5f110e77272fb5a775064a31bfc1f155c",
+          "version": "3.18.0"
         }
       },
       {
