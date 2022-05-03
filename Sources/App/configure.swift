@@ -25,7 +25,6 @@ func setDatabase(_ app: Application) {
         database: Environment.get("DATABASE_NAME") ?? "postgres",
         tlsConfiguration: tlsConfiguration
     ), as: .psql)
-    }
 }
 
 
