@@ -1,108 +1,74 @@
+import Fluent
+import FluentPostgresDriver
+import Leaf
 import Vapor
-import PostgresKit
-import PostgresNIO
+import os
 
 // configures your application
 public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
-    // app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-
+     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.migrations.add(CreateTodo())
+    app.views.use(.leaf)
     // register routes
-    //app.routes.defaultMaxBodySize = "500kb"
-    //app.routes.caseInsensitive = true
-    jsonDecoding()
-    connectDB(app)
+    setDatabase(app)
     try routes(app)
 }
 
 
-private func jsonDecoding() {
-    // create a new JSON encoder that uses unix-timestamp dates
-    let encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .secondsSince1970
+func setDatabase(_ app: Application) {
+    app.databases.use(.postgres(
+        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
+        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
+        username: Environment.get("DATABASE_USERNAME") ?? "postgres",
+        password: Environment.get("DATABASE_PASSWORD") ?? "root",
+        database: Environment.get("DATABASE_NAME") ?? "postgres"
+    ), as: .psql)
     
-    // override the global encoder used for the `.json` media type
-    ContentConfiguration.global.use(encoder: encoder, for: .json)
+    
 }
 
-private func connectDB(_ app: Application) {
-    if let dbUrlString = Environment.get("DATABASE_URL"){
-        print("Database Url is : \(dbUrlString)")
-        var postgresConfiguration = PostgresConfiguration(url: dbUrlString)!
-        postgresConfiguration.tlsConfiguration = .makeClientConfiguration()
-        postgresConfiguration.tlsConfiguration?.certificateVerification = .none
-//        app.databases.use(.postgres(configuration: postgresConfig), as: .psql)
-        
-        let pool = EventLoopGroupConnectionPool(
-            source: PostgresConnectionSource(configuration: postgresConfiguration),
-            on: app.eventLoopGroup
-        )
-        
-        
-        
-        
-        
-        let dbService = DatabaseService(pool: pool)
-        app.databaseService = dbService
-        app.lifecycle.use(dbService)
-        
-        let db = dbService.pool.database(logger: app.logger)
-//        let dbClient = DBClient(database: db)
-        app.logger.info("Will run migrate on DB")
-//        _ = try dbClient.migrate().wait()
-        app.logger.info("DB migration done")
-        
-    } else {
-        let configuration = PostgresConfiguration(
-            hostname: "localhost",
-            username: "postgres",
-            password: "root",
-            database: "postgres"
-        )
-        
-        let eventLoopGroup1: EventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
-        //    defer { try! eventLoopGroup.syncShutdownGracefully() }
-        //
-        let pool = EventLoopGroupConnectionPool(
-            source: PostgresConnectionSource(configuration: configuration),
-            on: eventLoopGroup1
-        )
-        
-        let dbService = DatabaseService(pool: pool)
-        app.databaseService = dbService
-        app.lifecycle.use(dbService)
-        
-        let db = dbService.pool.database(logger: app.logger)
-//        let dbClient = DBClient(database: db)
-        app.logger.info("Will run migrate on DB")
-//        _ = try dbClient.migrate().wait()
-        app.logger.info("DB migration done")
-    }
-}
 
-/*
-public func configure(_ app: Application) throws {
-    guard let dbUrlString = Environment.get("DATABASE_URL") else {
-        preconditionFailure("Missing DBURL")
-    }
-    
-    let postgresConfiguration = PostgresConfiguration(url: dbUrlString)!
-    let pool = EventLoopGroupConnectionPool(
-        source: PostgresConnectionSource(configuration: postgresConfiguration),
-        on: app.eventLoopGroup
-    )
-    
-    let dbService = DatabaseService(pool: pool)
-    app.databaseService = dbService
-    app.lifecycle.use(dbService)
- 
-    let db = dbService.pool.database(logger: app.logger)
-    let dbClient = DBClient(database: db)
-    app.logger.info("Will run migrate on DB")
-    _ = try dbClient.migrate().wait()
-    app.logger.info("DB migration done")
-    
-    // register routes
-    try routes(app)
-}
-*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//    app.databases.use(.postgres(
+//        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
+//        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
+//        username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
+//        password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
+//        database: Environment.get("DATABASE_NAME") ?? "vapor_database"
+//    ), as: .psql)
+//    app.databases.use(.mysql(
+//        hostname: Environment.get("DATABASE_HOST") ?? "localhost",
+//        port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? MySQLConfiguration.ianaPortNumber,
+//        username: Environment.get("DATABASE_USERNAME") ?? "vapor_username",
+//        password: Environment.get("DATABASE_PASSWORD") ?? "vapor_password",
+//        database: Environment.get("DATABASE_NAME") ?? "vapor_database"
+//    ), as: .mysql)
+//    try app.databases.use(.mongo(
+//        connectionString: Environment.get("DATABASE_URL") ?? "mongodb://localhost:27017/vapor_database"
+//    ), as: .mongo)
+//    app.databases.use(.sqlite(.file("db.sqlite")), as: .sqlite)

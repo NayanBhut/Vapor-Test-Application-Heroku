@@ -2,22 +2,26 @@
 import PackageDescription
 
 let package = Package(
-    name: "Run",
+    name: "Vapor",
     platforms: [
-        .macOS(.v12)
+       .macOS(.v12)
     ],
     dependencies: [
         // 💧 A server-side Swift web framework.
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
-        .package(url: "https://github.com/vapor/postgres-kit.git", from: "2.0.0")
+        .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
+        .package(url: "https://github.com/vapor/fluent-postgres-driver", .upToNextMajor(from: "2.0.0")),
+        .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
     ],
     targets: [
-        .target(name: "Run", dependencies: [ .target(name: "App")]),
+        .target(name: "Run",dependencies: [.target(name: "App")]),
         .target(
             name: "App",
             dependencies: [
-                .product(name: "Vapor", package: "vapor"),
-                .product(name: "PostgresKit", package: "postgres-kit")
+                .product(name: "Fluent", package: "fluent"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
+                .product(name: "Leaf", package: "leaf"),
+                .product(name: "Vapor", package: "vapor")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
@@ -27,9 +31,9 @@ let package = Package(
             ]
         ),
 //        .executableTarget(name: "Run", dependencies: [.target(name: "App")]),
-//        .testTarget(name: "AppTests", dependencies: [
-//            .target(name: "App"),
-//            .product(name: "XCTVapor", package: "vapor"),
-//        ])
+        .testTarget(name: "AppTests", dependencies: [
+            .target(name: "App"),
+            .product(name: "XCTVapor", package: "vapor"),
+        ])
     ]
 )
