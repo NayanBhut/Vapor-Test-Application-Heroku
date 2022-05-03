@@ -16,7 +16,7 @@ public func configure(_ app: Application) throws {
 
 
 func setDatabase(_ app: Application) {
-    let tlsConfiguration = TLSConfiguration.makeClientConfiguration()
+    let tlsConfiguration = TLSConfiguration.forClient(certificateVerification: .none)
     app.databases.use(.postgres(
         hostname: Environment.get("DATABASE_HOST") ?? "localhost",
         port: Environment.get("DATABASE_PORT").flatMap(Int.init(_:)) ?? PostgresConfiguration.ianaPortNumber,
