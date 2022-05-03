@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "Vapor",
+    name: "Run",
     platforms: [
        .macOS(.v12)
     ],
