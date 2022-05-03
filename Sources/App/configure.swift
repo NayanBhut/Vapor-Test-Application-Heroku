@@ -2,7 +2,6 @@ import Fluent
 import FluentPostgresDriver
 import Leaf
 import Vapor
-import os
 
 // configures your application
 public func configure(_ app: Application) throws {
