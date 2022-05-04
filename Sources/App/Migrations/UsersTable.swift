@@ -1,11 +1,11 @@
 import Fluent
 
-struct CreateTodo: AsyncMigration {
+struct UsersTable: AsyncMigration {
     func prepare(on database: Database) async throws {
-        try await database.schema("todos")
+        try await database.schema("Users")
             .id()
-            .field("title", .string, .required)
-            .create()
+            .field("email", .string, .required)
+            .update()
     }
 
     func revert(on database: Database) async throws {
