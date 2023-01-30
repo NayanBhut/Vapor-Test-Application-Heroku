@@ -5,7 +5,9 @@ struct UsersTable: AsyncMigration {
         try await database.schema("Users")
             .id()
             .field("email", .string, .required)
-            .update()
+            .field("name", .string, .required)
+            .field("username", .string, .required)
+            .create()
     }
 
     func revert(on database: Database) async throws {

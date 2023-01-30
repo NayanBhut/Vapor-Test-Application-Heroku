@@ -1,30 +1,30 @@
 import Fluent
 import Vapor
 
-struct TodoController: RouteCollection {
+struct AccountRoutes: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let todos = routes.grouped("users")
-        todos.get(use: index)
-        todos.post(use: create)
+        todos.get(use: getUser)
+        todos.post(use: createAccount)
         todos.group(":userID") { todo in
-            todo.delete(use: delete)
+            todo.delete(use: deleteUser)
         }
     }
 
-    func index(req: Request) async throws -> GetUser<[Users]> {
+    func getUser(req: Request) async throws -> GetUser<[Users]> {
         let arrData = try await Users.query(on: req.db).all()
         let user = GetUser(data: arrData, status: true)
         return user
     }
 
-    func create(req: Request) async throws -> GetUser<Users> {
+    func createAccount(req: Request) async throws -> GetUser<Users> {
         let todo = try req.content.decode(Users.self)
         try await todo.save(on: req.db)
         let user = GetUser(data: todo, status: true,message: "Inserted Successfully")
         return user
     }
 
-    func delete(req: Request) async throws -> GetUser<[String:String]> {
+    func deleteUser(req: Request) async throws -> GetUser<[String:String]> {
         guard let todo = try await Users.find(req.parameters.get("todoID"), on: req.db) else {
             return GetUser(data: nil, status: true,message: "Error in Deleting")
 //            Abort(.notFound)
