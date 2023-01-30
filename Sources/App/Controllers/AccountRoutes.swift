@@ -6,15 +6,19 @@ struct AccountRoutes: RouteCollection {
         let todos = routes.grouped("users")
         todos.get(use: getUser)
         todos.post(use: createAccount)
-        todos.group(":userID") { todo in
+        todos.group(":id") { todo in
             todo.delete(use: deleteUser)
         }
     }
 
     func getUser(req: Request) async throws -> GetUser<[Users]> {
         let arrData = try await Users.query(on: req.db).all()
-        let user = GetUser(data: arrData, status: true)
-        return user
+        if arrData.count == 0 {
+            return GetUser(data: [], status: false, message: "No users found.")
+        }else {
+            let user = GetUser(data: arrData, status: true)
+            return user
+        }
     }
 
     func createAccount(req: Request) async throws -> GetUser<Users> {
@@ -25,7 +29,7 @@ struct AccountRoutes: RouteCollection {
     }
 
     func deleteUser(req: Request) async throws -> GetUser<[String:String]> {
-        guard let todo = try await Users.find(req.parameters.get("todoID"), on: req.db) else {
+        guard let todo = try await Users.find(req.parameters.get("id"), on: req.db) else {
             return GetUser(data: nil, status: true,message: "Error in Deleting")
 //            Abort(.notFound)
         }

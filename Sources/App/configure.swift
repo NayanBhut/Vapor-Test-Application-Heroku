@@ -2,18 +2,21 @@ import Fluent
 import FluentPostgresDriver
 import Leaf
 import Vapor
+//import CryptorECC
+
 
 // configures your application
 public func configure(_ app: Application) throws {
     // uncomment to serve files from /Public folder
      app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
-    app.migrations.add(UsersTable())
+//    app.migrations.add(UsersTableAdd())
+    app.migrations.add(UsersTableAdd())
     app.views.use(.leaf)
     // register routes
     setDatabase(app)
+    
     try routes(app)
 }
-
 
 func setDatabase(_ app: Application) {
     if let url = Environment.get("DATABASE_URL") {
@@ -33,7 +36,37 @@ func setDatabase(_ app: Application) {
     }
 }
 
+/*
+func checkSHAKey() {
+    do {
+        let p256PrivateKey = try ECPrivateKey.make(for: .prime256v1)
+        let privateKeyPEM = p256PrivateKey.pemString
+        
+        print(privateKeyPEM)
+    }catch {
+        
+    }
+}
 
+func createClientSecret() {
+    var config: ServerConfiguration.AppleSignIn = ServerConfiguration.AppleSignIn()
+    let secret = AppleSignInCreds().createClientSecret(config: config)
+    print("Client Secret is \n",secret)
+}
+
+func checkECKeyCreate() {
+    let privateKey =
+"""
+-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQglf7ztYnsaHX2yiHJ
+meHFl5dg05y4a/hD7wwuB7hSRpmhRANCAASKRzmboLbG0NZ54B5PXxYSU7fvO8U7
+PyniQCWG+Agc3bdcgKU0RKApWYuBJKrZqyqLB2tTlgdtwcWSB0AEzVI8
+-----END PRIVATE KEY-----
+"""
+    
+    
+}
+*/
 
 
 

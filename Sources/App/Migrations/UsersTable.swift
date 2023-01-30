@@ -1,16 +1,34 @@
 import Fluent
 
-struct UsersTable: AsyncMigration {
+struct UsersTableAdd: AsyncMigration { //vapor run migrate  vapor run migrate --rvevert         
+
     func prepare(on database: Database) async throws {
         try await database.schema("Users")
-            .id()
-            .field("email", .string, .required)
+           .id()
             .field("name", .string, .required)
+            .field("age", .string, .required)
             .field("username", .string, .required)
+            // .field("id",.int8,.required)
+            .field("email",.string,.required)
+            .field("first_Name",.string,.required)
             .create()
     }
 
     func revert(on database: Database) async throws {
-        try await database.schema("todos").delete()
+        try await database.schema("Users").delete()
+    }
+}
+
+struct UsersTable_Name_ABC: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        try await database.schema("Users")
+            .field("first_Name", .string)
+            .update()
+    }
+    
+    func revert(on database: Database) async throws {
+        try await database.schema("Users")
+            .deleteField("first_Name")
+            .delete()
     }
 }
