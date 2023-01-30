@@ -12,6 +12,12 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver", .upToNextMajor(from: "2.0.0")),
         .package(url: "https://github.com/vapor/leaf.git", from: "4.0.0"),
+        .package(url: "https://github.com/GraphQLSwift/Graphiti.git", from: "0.25.0"),
+        .package(url: "https://github.com/IBM-Swift/BlueECC.git", from: "1.2.4"),
+        .package(url: "https://github.com/IBM-Swift/Swift-JWT.git", from: "3.5.3")
+
+        
+        
     ],
     targets: [
         .target(name: "Run",dependencies: [.target(name: "App")]),
@@ -21,7 +27,10 @@ let package = Package(
                 .product(name: "Fluent", package: "fluent"),
                 .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
                 .product(name: "Leaf", package: "leaf"),
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "Graphiti", package: "graphiti"),
+                .product(name: "CryptorECC", package: "BlueECC"),
+                .product(name: "SwiftJWT", package: "Swift-JWT"),
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of

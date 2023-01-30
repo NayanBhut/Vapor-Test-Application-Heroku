@@ -13,8 +13,12 @@ struct TodoController: RouteCollection {
 
     func index(req: Request) async throws -> GetUser<[Users]> {
         let arrData = try await Users.query(on: req.db).all()
-        let user = GetUser(data: arrData, status: true)
-        return user
+        if arrData.count == 0 {
+            return GetUser(data: [], status: false, message: "No users found.")
+        }else {
+            let user = GetUser(data: arrData, status: true)
+            return user
+        }
     }
 
     func create(req: Request) async throws -> GetUser<Users> {
