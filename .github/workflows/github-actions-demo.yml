@@ -7,10 +7,10 @@ jobs:
     steps:
       - run: which swift
       - run: swift --version
-      - name: Build
-        run: swift build
       - run: pwd
       - run: ls -la
+      - name: Build
+        run: swift build
         
   Explore-GitHub-Actions:
     if: false
