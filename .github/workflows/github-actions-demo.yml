@@ -2,13 +2,15 @@ name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
-  Ubunut-Build:
+  Ubuntu-Build:
     runs-on: ubuntu-latest
     steps:
       - run: which swift
       - run: swift --version
       - name: Build
         run: swift build
+      - run: pwd
+      - run: ls -la
         
   Explore-GitHub-Actions:
     if: false
