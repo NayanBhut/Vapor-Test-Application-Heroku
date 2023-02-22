@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/fluent-kit.git",
       "state" : {
-        "revision" : "6fc2804a4d8b3f8a66f2d4bb3e3789aac3abd53d",
-        "version" : "1.23.5"
+        "revision" : "2d072ce425de02c62b85a8451b8f1b6cf46b9c13",
+        "version" : "1.24.0"
       }
     },
     {
@@ -55,39 +55,21 @@
       }
     },
     {
-      "identity" : "graphiti",
+      "identity" : "jwt",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/GraphQLSwift/Graphiti.git",
+      "location" : "https://github.com/vapor/jwt.git",
       "state" : {
-        "revision" : "dbed58c7c6254b1031d74b4efccbab157329d3d1",
-        "version" : "0.25.0"
+        "revision" : "f9dc4cb5c49e120dd73b740a571cfd289ac30cb8",
+        "version" : "4.2.0"
       }
     },
     {
-      "identity" : "graphql",
+      "identity" : "jwt-kit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/GraphQLSwift/GraphQL.git",
+      "location" : "https://github.com/vapor/jwt-kit.git",
       "state" : {
-        "revision" : "58788b8620b485ea2a51a9ddfcd186e0828bdd30",
-        "version" : "1.4.0"
-      }
-    },
-    {
-      "identity" : "leaf",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor/leaf.git",
-      "state" : {
-        "revision" : "41741b782ac49959af2f7612661154326ac24d00",
-        "version" : "4.1.5"
-      }
-    },
-    {
-      "identity" : "leaf-kit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/vapor/leaf-kit.git",
-      "state" : {
-        "revision" : "949270ec003d34c72a592817d0c1dcdfc05726ae",
-        "version" : "1.5.0"
+        "revision" : "5f9c44d4c196cc06c3fc601f279169f121d6f62d",
+        "version" : "4.4.0"
       }
     },
     {
@@ -221,8 +203,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vapor/vapor.git",
       "state" : {
-        "revision" : "b05266f863ee93eeff4b6d075364ccc8f81bbc1e",
-        "version" : "4.57.0"
+        "revision" : "102cfdad237ee8288249cfb22dffefb2a66f7f9a",
+        "version" : "4.58.0"
       }
     },
     {

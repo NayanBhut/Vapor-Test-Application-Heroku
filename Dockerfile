@@ -6,8 +6,7 @@ FROM swift:5.6-focal as build
 # Install OS updates and, if needed, sqlite3
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
     && apt-get -q update \
-    && apt-get -q dist-upgrade -y {{#fluent.db.is_sqlite}}\
-    && apt-get install -y libsqlite3-dev {{/fluent.db.is_sqlite}}\
+    && apt-get -q dist-upgrade -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up a build area
