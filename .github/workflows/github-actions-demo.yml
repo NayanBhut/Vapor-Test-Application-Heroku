@@ -15,7 +15,7 @@ jobs:
         run: swift build
         
   Explore-GitHub-Actions:
-    if: false
+    if: true
     runs-on: macos-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
