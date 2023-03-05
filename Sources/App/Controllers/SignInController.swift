@@ -37,7 +37,7 @@ class SignInController: RouteCollection {
         guard let verify = user.isVerified, verify == true else { return ResponseModel(data: nil, status: false,message: "Please verify your account.") }
         guard let token = createToken(req: req, userId: user.id?.uuidString ?? "") else { return ResponseModel(data: nil, status: false,message: "Token not created") }
         
-        let userResponse = UserResponseModel(email: user.email, token: token, loginType: user.loginType, otp: nil, first_Name: user.first_Name,last_Name: user.last_Name)
+        let userResponse = UserResponseModel(id:user.id, email: user.email, token: token, loginType: user.loginType, otp: nil, first_Name: user.first_Name,last_Name: user.last_Name)
         return ResponseModel(data: userResponse, status: true,message: nil)
     }
     

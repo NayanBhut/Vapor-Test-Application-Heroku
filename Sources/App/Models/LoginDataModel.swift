@@ -66,7 +66,7 @@ extension UsersData: Validatable {
         validations.add(
             "password",
             as: String.self,
-            is: .count(3...) && .alphanumeric,
+            is: .count(3...) && .ascii,
             customFailureDescription: "Password is invalid!"
         )
         validations.add(
@@ -104,6 +104,7 @@ struct ResponseModel<T:Content>: Content {
 }
 
 struct UserResponseModel: Content {
+    var id: UUID?
     var email: String?
     var token: String?
     var loginType: String?

@@ -19,10 +19,12 @@ class ProductController: RouteCollection {
         }
     }
     
-    func getProducts(req: Request) async throws -> ResponseModel<[ProductModel]>{
+    func getProducts(req: Request) async throws -> ResponseModel<GetProductsModel>{
         try req.auth.require(UsersData.self)
-        let productsData = try await ProductModel.query(on: req.db).all()
-        return ResponseModel(data: productsData, status: true,message: productsData.count == 0 ? "No Products Fount" : nil)
+        let productsData = try await ProductModel.query(on: req.db).paginate(for: req)
+        let totalPage = productsData.metadata.pageCount
+        let arrProducts = productsData.items
+        return ResponseModel(data: GetProductsModel(arrProducts: arrProducts, totalPage: totalPage), status: true,message: arrProducts.count == 0 ? "No Products Fount" : nil)
     }
     
     func addProduct(req: Request) async throws -> ResponseModel<ProductModel> {

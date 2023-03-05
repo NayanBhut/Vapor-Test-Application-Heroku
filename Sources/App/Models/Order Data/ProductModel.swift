@@ -32,3 +32,8 @@ extension ProductModel: Validatable {
         )
     }
 }
+
+struct GetProductsModel: Content {
+    var arrProducts: [ProductModel]
+    var totalPage: Int
+}
