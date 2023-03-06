@@ -47,3 +47,20 @@ class InitialMigrations: AsyncMigration {
         try await database.schema(ProductModel.schema).delete()
     }
 }
+
+
+//struct UpdateUnitTable1: Migration {
+//    func prepare(on database: Database) -> EventLoopFuture<Void> {
+//        database.schema("Unit")
+//            .field("createdByUserId", .uuid)
+//            .foreignKey("createdByUserId", references: "User", "id", name: "created_user_id")
+//            .update()
+//    }
+//
+//    func revert(on database: Database) -> EventLoopFuture<Void> {
+//        database.schema("Unit")
+//            .deleteConstraint(name: "created_user_id")
+//            .deleteField("createdByUserId")
+//            .update()
+//    }
+//}

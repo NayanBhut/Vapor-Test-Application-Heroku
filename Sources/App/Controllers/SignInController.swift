@@ -99,6 +99,9 @@ class SignInController: RouteCollection {
         }else {
             return ResponseModel(data: nil, status: false,message: "Please enter valid otp.")
         }
+        
+        let customer = CustomerModel(id:user?.id ,name: (user?.first_Name ?? "") + " " + (user?.last_Name ?? ""))
+        try await customer.save(on: req.db)
          
         let userResponse = UserResponseModel(email: savedUser.email, token: token, loginType: savedUser.loginType, otp: nil)
         return ResponseModel(data: userResponse, status: true,message: "User Registered Successfully")

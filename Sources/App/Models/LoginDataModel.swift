@@ -122,3 +122,13 @@ struct RequestOTPVerify: Content {
     var email: String?
     var otp: String?
 }
+
+struct CreateOrder: Content {
+    var customer_id: String?
+    var quantity: String?
+    var product_id: String?
+}
+
+struct OrderResponse: Content {
+    var orderId: String?
+}
