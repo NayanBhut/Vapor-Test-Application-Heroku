@@ -14,6 +14,9 @@ public func configure(_ app: Application) throws {
     
     setDatabase(app)
     app.jwt.signers.use(.hs256(key: "secret"))
+    app.routes.defaultMaxBodySize = "10mb" /// config max upload file size
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.http.server.configuration.port = 8081//Int(Environment.get("PORT") ?? "8080" ) ?? 8080
     addMigration(app)
     try routes(app)
 }
