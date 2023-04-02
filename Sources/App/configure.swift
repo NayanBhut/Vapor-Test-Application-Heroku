@@ -40,7 +40,8 @@ func setDatabase(_ app: Application) {
 
 
 func addMigration(_ app: Application) {
-    app.migrations.add(InitialMigrations(), UsersData.LoginMigration(), OTPMigration())
+    app.migrations.add(InitialMigrations(), UsersData.LoginMigration(), OTPMigration(), UsersData.LoginMigration_AddProfileImage())
+    app.autoMigrate()
 }
 
 //    app.databases.use(.postgres(

@@ -22,10 +22,11 @@ final class UsersData: Model, Content, Authenticatable {
     @Field(key: "isVerified") var isVerified: Bool?
     @Field(key: "first_Name") var first_Name: String
     @Field(key: "last_Name") var last_Name: String
+    @Field(key: "profile_image") var profile_image: String?
     
     init() { }
     
-    init(id: UUID? = nil, first_Name:String = "", last_name:String = "", email: String, password: String, token: String? = nil, loginType: String, createdDate: Date? = nil, updatedDate: Date? = nil, isVerified: Bool = false) {
+    init(id: UUID? = nil, first_Name:String = "", last_name:String = "", email: String, password: String, token: String? = nil, loginType: String, createdDate: Date? = nil, updatedDate: Date? = nil, isVerified: Bool = false, profile_image: String? = nil) {
         self.id = id
         self.first_Name = first_Name
         self.last_Name = last_name
@@ -36,6 +37,21 @@ final class UsersData: Model, Content, Authenticatable {
         self.createdDate = createdDate
         self.updatedDate = updatedDate
         self.isVerified = isVerified
+        self.profile_image = profile_image
+    }
+    
+    init(regRequestModel: UserRegisterModel) {
+        self.id = id
+        self.first_Name = regRequestModel.first_Name ?? ""
+        self.last_Name = regRequestModel.last_Name ?? ""
+        self.email = regRequestModel.email ?? ""
+        self.password = regRequestModel.password ?? ""
+        self.token = regRequestModel.token ?? ""
+        self.loginType = regRequestModel.loginType ?? ""
+        self.createdDate = regRequestModel.createdDate ?? Date()
+        self.updatedDate = regRequestModel.updatedDate ?? Date()
+        self.isVerified = Bool(regRequestModel.isVerified ?? false)
+        self.profile_image = regRequestModel.profile_image?.filename ?? ""
     }
 }
 
@@ -111,6 +127,7 @@ struct UserResponseModel: Content {
     var otp: String?
     var first_Name: String?
     var last_Name: String?
+    var profile_image: String?
 }
 
 struct RequestLogin: Content {
@@ -131,4 +148,67 @@ struct CreateOrder: Content {
 
 struct OrderResponse: Content {
     var orderId: String?
+}
+
+struct UserRegisterModel: Content, Authenticatable  {
+    var id: UUID?
+    var email: String?
+    var password: String?
+    var token: String?
+    var loginType: String?
+    var otp: String?
+    var first_Name: String?
+    var last_Name: String?
+    var createdDate: Date?
+    var updatedDate: Date?
+    var isVerified: Bool?
+    var profile_image: File?
+}
+
+extension UserRegisterModel: Validatable {
+    static func validations(_ validations: inout Validations) {
+        // Validations go here.
+        validations.add(
+            "first_Name",
+            as: String.self,
+            is: .count(3...10),
+            customFailureDescription: "Please enter valid first Name"
+        )
+        
+        validations.add(
+            "last_Name",
+            as: String.self,
+            is: .count(3...10),
+            customFailureDescription: "Please enter valid last Name"
+        )
+        
+        validations.add(
+            "email",
+            as: String.self,
+            is: .email,
+            customFailureDescription: "Please enter valid email"
+        )
+        
+        validations.add(
+            "password",
+            as: String.self,
+            is: .count(3...) && .ascii,
+            customFailureDescription: "Password is invalid!"
+        )
+        validations.add(
+            "loginType",
+            as: String.self,
+            is: !.empty && .in(["facebook","google","email"]),
+            customFailureDescription: "Please enter valid logintype"
+        )
+        
+        //        validations.add(
+        //            "profile_image",
+        //            as: File.self,
+        //            is: .init(validate: { data in
+        //                data.data.readableBytes > 0
+        //            }),
+        //            customFailureDescription: "Please enter valid profile Image"
+        //        )
+    }
 }
