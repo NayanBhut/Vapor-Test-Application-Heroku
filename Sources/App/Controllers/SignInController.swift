@@ -18,6 +18,9 @@ class SignInController: RouteCollection {
         let registerGroup = routes.grouped("register")
         registerGroup.post(use: register)
         
+        let protected = routes.grouped(UserAuthenticator())
+        protected.post("editProfile",use: editProfile)
+        
         let otp = routes.grouped("verifyOTP")
         otp.post(use: verifyOTP)
     }
@@ -106,6 +109,44 @@ class SignInController: RouteCollection {
          
         let userResponse = UserResponseModel(email: savedUser.email, token: token, loginType: savedUser.loginType, otp: nil)
         return ResponseModel(data: userResponse, status: true,message: "User Registered Successfully")
+    }
+    
+    func editProfile(req: Request) async throws -> ResponseModel<UserResponseModel> {
+        try req.auth.require(UsersData.self)
+        try UserRegisterModel.validate(content: req)
+        
+        let userDataModel = try req.content.decode(UserRegisterModel.self)
+        
+        guard let getUser = try await UsersData.query(on: req.db).filter(\.$email == (userDataModel.email ?? "" )).first() else { return
+            ResponseModel(data: nil, status: false,message: "Not able to update Profile. Invalid User") }
+        
+        let oldImage = getUser.profile_image ?? ""
+        
+        getUser.updateCurrentObject(regRequestModel: userDataModel)
+        getUser.updatedDate = Date()
+        
+        print(getUser)
+        
+        if !oldImage.isEmpty {
+            if let userProfile = userDataModel.profile_image, userProfile.data.readableBytes > 0,
+               let imageName = await getFile(req: req, file: userProfile){
+                getUser.profile_image = imageName
+                do {
+                    try await getUser.save(on: req.db)
+                } catch {
+                    return ResponseModel(data: nil, status: false,message: "Not able to update profile. \(error.localizedDescription)")
+                }
+            }
+            let path = req.application.directory.publicDirectory + oldImage //Adding File To Path
+            do { try FileManager.default.removeItem(atPath: path) } catch {
+                print(error.localizedDescription)
+                return ResponseModel(data: nil, status: true,message: "Profile Updated Successfully")
+            }
+            return ResponseModel(data: nil, status: true,message: "Profile Updated With Image Successfully")
+        }else {
+            print("User has no image")
+            return ResponseModel(data: nil, status: true,message: "Profile Updated Successfully")
+        }
     }
 }
 

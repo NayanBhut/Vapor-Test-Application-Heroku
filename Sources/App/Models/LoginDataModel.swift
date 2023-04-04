@@ -53,6 +53,21 @@ final class UsersData: Model, Content, Authenticatable {
         self.isVerified = Bool(regRequestModel.isVerified ?? false)
         self.profile_image = regRequestModel.profile_image?.filename ?? ""
     }
+    
+    func updateCurrentObject(regRequestModel: UserRegisterModel) {
+        self.id = id
+        self.first_Name = regRequestModel.first_Name ?? ""
+        self.last_Name = regRequestModel.last_Name ?? ""
+        self.email = regRequestModel.email ?? ""
+        self.password = regRequestModel.password ?? ""
+        self.token = regRequestModel.token ?? ""
+        self.loginType = regRequestModel.loginType ?? ""
+        self.createdDate = regRequestModel.createdDate ?? Date()
+        self.updatedDate = regRequestModel.updatedDate ?? Date()
+        self.isVerified = Bool(regRequestModel.isVerified ?? false)
+        self.profile_image = regRequestModel.profile_image?.filename ?? ""
+    }
+    
 }
 
 extension UsersData: Validatable {
