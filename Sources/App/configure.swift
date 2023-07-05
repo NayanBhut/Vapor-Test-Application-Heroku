@@ -14,6 +14,12 @@ public func configure(_ app: Application) throws {
     
     setDatabase(app)
     app.jwt.signers.use(.hs256(key: "secret"))
+    app.routes.defaultMaxBodySize = "100mb"
+
+    app.directory.publicDirectory = "/Users/nayanbhut/Documents/Public/"
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+
+    
     addMigration(app)
     try routes(app)
 }

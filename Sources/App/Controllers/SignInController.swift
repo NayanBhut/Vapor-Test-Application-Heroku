@@ -23,7 +23,7 @@ class SignInController: RouteCollection {
     }
     
     func createToken(req: Request, userId: String) -> String? {
-        let payload = TokenPayload(subject: "JWTToken", expiration: .init(value: Date().addingTimeInterval(60 * 60)), isAdmin: false, userId: userId) //Valid for hour
+        let payload = TokenPayload(subject: "JWTToken", expiration: .init(value: Date().addingTimeInterval(60 * 60 * 8)), isAdmin: false, userId: userId) //Valid for 8 hour
         return getToken(req: req, payload: payload)
     }
     
@@ -32,7 +32,6 @@ class SignInController: RouteCollection {
         print(userData)
         
         let getUser = try await UsersData.query(on: req.db).filter(\.$email == (userData.email)).filter(\.$password == (userData.password)).first()
-        
         guard let user = getUser else {return ResponseModel(data: nil, status: false,message: "Please enter valid detail.") }
         guard let verify = user.isVerified, verify == true else { return ResponseModel(data: nil, status: false,message: "Please verify your account.") }
         guard let token = createToken(req: req, userId: user.id?.uuidString ?? "") else { return ResponseModel(data: nil, status: false,message: "Token not created") }
