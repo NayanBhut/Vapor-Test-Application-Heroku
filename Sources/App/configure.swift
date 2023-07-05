@@ -14,12 +14,12 @@ public func configure(_ app: Application) throws {
     
     setDatabase(app)
     app.jwt.signers.use(.hs256(key: "secret"))
-    app.routes.defaultMaxBodySize = "100mb"
 
+    app.routes.defaultMaxBodySize = "100mb" // config max upload file size
     app.directory.publicDirectory = "/Users/nayanbhut/Documents/Public/"
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+//    app.http.server.configuration.port = 8081//Int(Environment.get("PORT") ?? "8080" ) ?? 8080
 
-    
     addMigration(app)
     try routes(app)
 }
@@ -43,7 +43,8 @@ func setDatabase(_ app: Application) {
 
 
 func addMigration(_ app: Application) {
-    app.migrations.add(InitialMigrations(), UsersData.LoginMigration(), OTPMigration())
+    app.migrations.add(InitialMigrations(), UsersData.LoginMigration(), OTPMigration(), UsersData.LoginMigration_AddProfileImage())
+    app.autoMigrate()
 }
 
 //    app.databases.use(.postgres(

@@ -18,6 +18,9 @@ class SignInController: RouteCollection {
         let registerGroup = routes.grouped("register")
         registerGroup.post(use: register)
         
+        let protected = routes.grouped(UserAuthenticator())
+        protected.post("editProfile",use: editProfile)
+        
         let otp = routes.grouped("verifyOTP")
         otp.post(use: verifyOTP)
     }
@@ -36,21 +39,23 @@ class SignInController: RouteCollection {
         guard let verify = user.isVerified, verify == true else { return ResponseModel(data: nil, status: false,message: "Please verify your account.") }
         guard let token = createToken(req: req, userId: user.id?.uuidString ?? "") else { return ResponseModel(data: nil, status: false,message: "Token not created") }
         
-        let userResponse = UserResponseModel(id:user.id, email: user.email, token: token, loginType: user.loginType, otp: nil, first_Name: user.first_Name,last_Name: user.last_Name)
+        let userResponse = UserResponseModel(id:user.id, email: user.email, token: token, loginType: user.loginType, otp: nil, first_Name: user.first_Name,last_Name: user.last_Name, profile_image: user.profile_image)
         return ResponseModel(data: userResponse, status: true,message: nil)
     }
     
     func register(req: Request) async throws -> ResponseModel<UserResponseModel> {
-        try UsersData.validate(content: req)
+        try UserRegisterModel.validate(content: req)
         
-        let userData = try req.content.decode(UsersData.self)
+        let userDataModel = try req.content.decode(UserRegisterModel.self)
         
-        let getUser = try await UsersData.query(on: req.db).filter(\.$email == (userData.email )).first()
+        guard let userProfile = userDataModel.profile_image, userProfile.data.readableBytes > 0, let imageName = await getFile(req: req, file: userProfile) else { return ResponseModel(data: nil, status: false,message: "User profile image is not valid.") }
+        let getUser = try await UsersData.query(on: req.db).filter(\.$email == (userDataModel.email ?? "" )).first()
         guard getUser == nil else { return ResponseModel(data: nil, status: false,message: "User is already registered. Please login") }
         
+        
+        let userData = UsersData(regRequestModel: userDataModel)
         userData.id = UUID()
-        userData.token = ""
-        userData.isVerified = false
+        userData.profile_image = imageName
         
         print(userData)
         do {    try await userData.save(on: req.db) }
@@ -79,7 +84,6 @@ class SignInController: RouteCollection {
         
         if user?.isVerified == true { return ResponseModel(data: nil, status: false,message: "User already Verified. Please Login.") }
         
-        let payload = TokenPayload(subject: "JWTToken", expiration: .init(value: Date()), isAdmin: false, userId: user?.id?.uuidString ?? "")
         guard let savedUser = user , let userID = savedUser.id else { return ResponseModel(data: nil, status: false,message: "User not found. Please register.") }
         guard let token = createToken(req: req, userId: user?.id?.uuidString ?? "") else { return ResponseModel(data: nil, status: false,message: "Token not created") }
         
@@ -106,6 +110,67 @@ class SignInController: RouteCollection {
         return ResponseModel(data: userResponse, status: true,message: "User Registered Successfully")
     }
     
+    func editProfile(req: Request) async throws -> ResponseModel<UserResponseModel> {
+        try req.auth.require(UsersData.self)
+        try UserRegisterModel.validate(content: req)
+        
+        let userDataModel = try req.content.decode(UserRegisterModel.self)
+        
+        guard let getUser = try await UsersData.query(on: req.db).filter(\.$email == (userDataModel.email ?? "" )).first() else { return
+            ResponseModel(data: nil, status: false,message: "Not able to update Profile. Invalid User") }
+        
+        let oldImage = getUser.profile_image ?? ""
+        
+        getUser.updateCurrentObject(regRequestModel: userDataModel)
+        getUser.updatedDate = Date()
+        
+        print(getUser)
+        
+        if !oldImage.isEmpty {
+            if let userProfile = userDataModel.profile_image, userProfile.data.readableBytes > 0,
+               let imageName = await getFile(req: req, file: userProfile){
+                getUser.profile_image = imageName
+                do {
+                    try await getUser.save(on: req.db)
+                } catch {
+                    return ResponseModel(data: nil, status: false,message: "Not able to update profile. \(error.localizedDescription)")
+                }
+            }
+            let path = req.application.directory.publicDirectory + oldImage //Adding File To Path
+            do { try FileManager.default.removeItem(atPath: path) } catch {
+                print(error.localizedDescription)
+                return ResponseModel(data: nil, status: true,message: "Profile Updated Successfully")
+            }
+            return ResponseModel(data: nil, status: true,message: "Profile Updated With Image Successfully")
+        }else {
+            print("User has no image")
+            return ResponseModel(data: nil, status: true,message: "Profile Updated Successfully")
+        }
+    }
+}
+
+extension SignInController {
+    func getFile(req: Request, file: File) async -> String? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "y-m-d-HH-MM-SS-"
+        let prefix = formatter.string(from: .init())
+        let fileName = prefix + file.filename
+        let path = req.application.directory.publicDirectory + fileName //Adding File To Path
+        let isImage = ["png", "jpeg", "jpg", "gif", "txt"].contains(file.extension?.lowercased())
+        
+        if !isImage {
+            return nil
+        }else {
+            print("path is ",path)
+            do {
+                try await req.fileio.writeFile(file.data, at: path)
+                return fileName
+            }catch {
+                print("Error is :",error.localizedDescription)
+                return nil
+            }
+        }
+    }
 }
 
 
@@ -114,3 +179,44 @@ class SignInController: RouteCollection {
 //            .join(Star.self, on: \Planet.$star.$id == \Star.$id)
 //            .field(Star.self, \.$name)
 //            .all().wait()
+
+
+/*
+ func addProfilePicturePostHandler(_ req: Request)
+ throws -> Future<Response> {
+ // 1
+ return try flatMap(
+ to: Response.self,
+ req.parameters.next(User.self),
+ req.content.decode(ImageUploadData.self)) {
+ user, imageData in
+ // 2
+ let workPath =
+ try req.make(DirectoryConfig.self).workDir
+ // 3
+ let name =
+ try "\(user.requireID())-\(UUID().uuidString).jpg"
+ // 4
+ let path = workPath + self.imageFolder + name
+ // 5
+ FileManager().createFile(
+ atPath: path,
+ contents: imageData.picture,
+ attributes: nil)
+ // 6
+ user.profilePicture = name
+ // 7
+ let redirect =
+ try req.redirect(to: "/users/\(user.requireID())")
+ return user.save(on: req).transform(to: redirect)
+ }
+ }
+
+ */
+
+
+/*
+ let serverConfig = req.application.http.server.configuration
+ let hostname = serverConfig.hostname
+ let port = serverConfig.port
+ */

@@ -89,9 +89,9 @@ struct FileUploadController: RouteCollection {
     }
 
     func getUploadedFile(req: Request) async throws -> String {
-
+        
         let input = try req.content.decode(Input.self)
-
+        
         guard input.file.data.readableBytes > 0 else {
             throw Abort(.badRequest)
         }
@@ -102,7 +102,6 @@ struct FileUploadController: RouteCollection {
         let fileName = prefix + input.file.filename
         let path = req.application.directory.publicDirectory + fileName //Adding File To Path
         let isImage = ["png", "jpeg", "jpg", "gif", "txt"].contains(input.file.extension?.lowercased())
-
         if !isImage {
             return "Please upload valid file"
         }else {
@@ -148,8 +147,6 @@ struct FileUploadController: RouteCollection {
             .asyncMap { file in
                 return await getFileData(req: req, file: file)
             }
-
-
         return arrData.contains(where: {$0 == ""}) ? "Image Not Uploaded Successfully" :"Image Uploaded Successfully"
     }
 }
@@ -178,4 +175,3 @@ struct Inputs: Content {
     var firstName: String
     var lastName: String
 }
-

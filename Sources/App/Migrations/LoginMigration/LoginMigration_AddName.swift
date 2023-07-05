@@ -53,4 +53,19 @@ extension UsersData {
                 .delete()
         }
     }
+    
+    struct LoginMigration_AddProfileImage: AsyncMigration {
+        func prepare(on database: Database) async throws {
+            try await database.schema("UsersDataTable")
+                .field("profile_image", .string, .required, .sql(.default("")))
+                .update()
+        }
+        
+        func revert(on database: Database) async throws {
+            try await database
+                .schema("UsersDataTable")
+                .deleteField("profile_image")
+                .update()
+        }
+    }
 }
